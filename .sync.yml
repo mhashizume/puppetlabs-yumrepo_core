@@ -1,6 +1,6 @@
 .rubocop.yml:
   default_configs:
-    Layout/IndentHeredoc:
+    Layout/HeredocIndentation:
       Enabled: false
 Gemfile:
   optional:
@@ -11,15 +11,8 @@ Gemfile:
         condition: "Gem::Version.new(RUBY_VERSION.dup) >= Gem::Version.new('2.2.2')"
   required:
     ':system_tests':
-      - gem: 'puppet-module-posix-system-r#{minor_version}'
-        platforms: ruby
-      - gem: 'puppet-module-win-system-r#{minor_version}'
-        platforms:
-          - mswin
-          - mingw
-          - x64_mingw
       - gem: beaker
-        version: '~> 3.34'
+        version: '~> 4'
         from_env: BEAKER_VERSION
       - gem: beaker-abs
         from_env: BEAKER_ABS_VERSION
@@ -31,15 +24,16 @@ Gemfile:
         from_env: BEAKER_RSPEC_VERSION
       - gem: beaker-puppet
         from_env: BEAKER_PUPPET_VERSION
-        version: '~> 0.14'
+        version: '~> 1.0'
+      - gem: beaker-vmpooler
+        from_env: BEAKER_PUPPET_VERSION
+        version: '~> 1.3'
 .gitlab-ci.yml:
   delete: true
 appveyor.yml:
   delete: true
 .travis.yml:
-  remove_includes:
-    - env: PUPPET_GEM_VERSION="~> 4.0" CHECK=parallel_spec
-      rvm: 2.1.9
+  delete: true
   global_env:
     - "---BEAKER_PUPPET_COLLECTION=puppet5 PUPPET_GEM_VERSION=\"~> 5.0\""
     - BEAKER_PUPPET_COLLECTION=puppet6 PUPPET_GEM_VERSION="git://github.com/puppetlabs/puppet#master"
