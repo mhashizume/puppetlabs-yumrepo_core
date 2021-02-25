@@ -18,7 +18,7 @@ Puppet::Type.newtype(:yumrepo) do
   # Doc string for properties that can be made 'absent'
   ABSENT_DOC = 'Set this to `absent` to remove it from the file completely.'.freeze
   # False can be false/0/no and True can be true/1/yes in yum.
-  YUM_BOOLEAN = %r{^(true|false|0|1|no|yes)$}
+  YUM_BOOLEAN = %r{^(true|false|0|1|no|yes)$}.freeze
   YUM_BOOLEAN_DOC = 'Valid values are: false/0/no or true/1/yes.'.freeze
 
   # Common munge logic for YUM_BOOLEAN values. Munges for two requirements:
@@ -319,7 +319,7 @@ Puppet::Type.newtype(:yumrepo) do
 
     newvalues(%r{.*}, :absent)
     validate do |value|
-      next if value.to_s =~ %r{^(absent|_none_)$}
+      next if %r{^(absent|_none_)$}.match?(value.to_s)
       next if value.to_s.empty? && Facter.value(:operatingsystemmajrelease).to_i >= 8
 
       parsed = URI.parse(value)
@@ -450,9 +450,8 @@ Puppet::Type.newtype(:yumrepo) do
 
   private
 
-  def set_sensitive_parameters(sensitive_parameters) # rubocop:disable Style/AccessorMethodName
-    parameter(:password).sensitive = true if parameter(:password)
-    parameter(:proxy_password).sensitive = true if parameter(:proxy_password)
-    super(sensitive_parameters)
+  def set_sensitive_parameters(sensitive_parameters) parameter(:password).sensitive = true if parameter(:password)
+                                                     parameter(:proxy_password).sensitive = true if parameter(:proxy_password)
+                                                     super(sensitive_parameters)
   end
 end
